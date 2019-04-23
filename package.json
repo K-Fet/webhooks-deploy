@@ -1,0 +1,17 @@
+{
+  "name": "webhooks-deploy",
+  "version": "0.0.1",
+  "description": "A lightweight server used to deploy a new version of the K-App",
+  "main": "index.js",
+  "repository": "https://github.com/K-Fet/webhooks-deploy.git",
+  "author": "Marc-Antoine Fernandes <marcantoinefernandes@gmail.com>",
+  "license": "Apache-2.0",
+  "private": true,
+  "dependencies": {
+    "argon2": "^0.21.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "uuid": "^3.3.2"
+  }
+}
