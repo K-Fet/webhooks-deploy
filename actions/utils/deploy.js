@@ -62,8 +62,8 @@ const saga = [
   {
     name: 'Checkout new ref',
     progress: 25,
-    task: async ({ cwd, ref, reporter }) => {
-      await spawn('git', ['checkout', ref], { name: `git-checkout-ref-${reporter.id}`, cwd });
+    task: async ({ cwd, sha, reporter }) => {
+      await spawn('git', ['checkout', sha], { name: `git-checkout-ref-${reporter.id}`, cwd });
     },
     undoTask: async ({ cwd, reporter, currentHead }) => {
       await spawn('git', ['checkout', currentHead], { name: `git-checkout-previous-${reporter.id}`, cwd });
@@ -109,7 +109,8 @@ const saga = [
 ];
 
 
-async function taskHandler({ cwd, ref, reporter }, token) {
+async function taskHandler({ cwd, sha, reporter }, token) {
+  reporter.start();
   const undoStack = [];
   const params = {};
 
@@ -121,7 +122,7 @@ async function taskHandler({ cwd, ref, reporter }, token) {
     }
     console.log(`[deploy] Executing task '${name}`);
     try {
-      const newParams = await task({ cwd, ref, reporter, ...params });
+      const newParams = await task({ cwd, sha, reporter, ...params });
 
       if (progress) reporter.updateProgress(progress);
       if (undoTask) undoStack.push({ name, undoTask });
@@ -137,7 +138,7 @@ async function taskHandler({ cwd, ref, reporter }, token) {
   for (const { name, undoTask } of undoStack) {
     console.log(`[deploy] Cancelling task '${name}`);
     try {
-      await undoTask({ cwd, ref, reporter, ...params });
+      await undoTask({ cwd, sha, reporter, ...params });
     } catch (e) {
       cancelFailed = true;
       reporter.failedCancelling();
@@ -150,10 +151,10 @@ async function taskHandler({ cwd, ref, reporter }, token) {
   }
 }
 
-function deploy({ path, ref, reporter }) {
+function deploy({ path, sha, reporter }) {
   const cwd = path.resolve(DEPLOY_FOLDER, path);
 
-  const task = deployQueue.push(taskHandler, { args: { cwd, ref, reporter }, timeout: DEPLOY_TIMEOUT });
+  const task = deployQueue.push(taskHandler, { args: { cwd, sha, reporter }, timeout: DEPLOY_TIMEOUT });
   reporter.setTask(task);
 
   return task;

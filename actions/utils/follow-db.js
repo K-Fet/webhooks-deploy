@@ -9,7 +9,7 @@ const tokens = new Map();
 class Reporter {
   constructor(id) {
     this.id = id;
-    this.startDate = new Date();
+    this.startDate = null;
     this.endDate = null;
     this.progress = 0;
     this.state = 'ENQUEUED';
@@ -17,6 +17,11 @@ class Reporter {
 
   setTask(task) {
     this.task = task;
+  }
+
+  start() {
+    this.state = 'RUNNING';
+    this.startDate = new Date();
   }
 
   cancelTask() {
@@ -39,13 +44,16 @@ class Reporter {
     if (!this.endDate) this.endDate = new Date();
   }
 
+  canCancel() {
+    return ['RUNNING', 'ENQUEUED'].includes(this.state);
+  }
+
   updateProgress(progress) {
     if (progress >= BASE) {
       this.progress = BASE;
       this.state = 'COMPLETED';
       this.endDate = new Date();
     } else {
-      this.state = 'RUNNING';
       this.progress = progress;
     }
   }

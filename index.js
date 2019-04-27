@@ -12,6 +12,7 @@ const ACTIONS = {
   'deploy-staging': require('./actions/deploy-staging'),
   'deploy-prod': require('./actions/deploy-prod'),
   'follow-action': require('./actions/follow-action'),
+  'cancel-action': require('./actions/cancel-action'),
 };
 
 const am = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -38,11 +39,11 @@ const handler = async (req, res) => {
 
   try {
     const { status, result } = await runner(req, other);
+    return res.json(result).status(status).end();
   } catch (e) {
     console.warn(`Error execution action ${action}`, e);
-    return res.sendStatus(500);
+    return res.sendStatus(500).end();
   }
-  return res.json(result).status(status);
 };
 
 // Register routes and listen
@@ -54,5 +55,5 @@ app.post('/',
 );
 
 app.listen(PORT, () => {
-  console.log(`Listneing on ${PORT}`);
+  console.log(`Listening on ${PORT}`);
 });

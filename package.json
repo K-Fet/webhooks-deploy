@@ -8,6 +8,7 @@
   "license": "Apache-2.0",
   "private": true,
   "dependencies": {
+    "@octokit/rest": "^16.25.0",
     "argon2": "^0.21.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
