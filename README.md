@@ -1,6 +1,6 @@
 # Webhooks Deploy
 
-A lightweight server used to deploy a new version of the
+A lightweight (~400 LOC) server used to deploy a new version of the
 [K-App](https://github.com/K-Fet/K-App/).
 
 ## Environment variables
