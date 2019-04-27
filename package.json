@@ -12,6 +12,7 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "morgan": "^1.9.1",
+    "sequential-task-queue": "^1.2.1",
     "uuid": "^3.3.2"
   }
 }

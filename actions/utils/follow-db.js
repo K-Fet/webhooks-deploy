@@ -1,40 +1,68 @@
 const uuid = require('uuid/v4');
 
 const BASE = 100; // Max advancement
-const CLEAN_EVERY = 60;
+const CLEAN_EVERY = 1000 * 60;
+const DELETE_AFTER = 1000 * 60 * 60; // Delete after 1 hr
 const MAX_SIZE = 1000;
 const tokens = new Map();
 
-class NewReport {
-  constructor(id, { ttl, onCancel }) {
+class Reporter {
+  constructor(id) {
     this.id = id;
     this.startDate = new Date();
     this.endDate = null;
-    this.ttl = ttl || 3600;
     this.progress = 0;
-    this.completed = false;
-    this.onCancel = onCancel;
+    this.state = 'ENQUEUED';
+  }
+
+  setTask(task) {
+    this.task = task;
+  }
+
+  cancelTask() {
+    if (!this.task) return false;
+    this.task.cancel();
+    return true;
+  }
+
+  failedCancelling() {
+    this.state = 'FAILED_CANCELLING';
+  }
+
+  cancelling() {
+    this.state = 'CANCELLING';
+    this.endDate = new Date();
+  }
+
+  cancelled() {
+    this.state = 'CANCELLED';
+    if (!this.endDate) this.endDate = new Date();
   }
 
   updateProgress(progress) {
     if (progress >= BASE) {
       this.progress = BASE;
-      this.completed = true;
+      this.state = 'COMPLETED';
       this.endDate = new Date();
     } else {
+      this.state = 'RUNNING';
       this.progress = progress;
     }
   }
 
-  isDead() {
-    const diff = start - (1000 * this.ttl);
-    return diff < 0;
+  isEnded() {
+    return ['COMPLETED', 'CANCELLED', 'FAILED_CANCELLING'].includes(this.state);
+  }
+
+  isDeletable() {
+    const threshold = Date.now() - DELETE_AFTER;
+    return this.isEnded() && threshold > this.endDate.getTime();
   }
 
   json() {
     return {
       id: this.id,
-      completed: this.completed,
+      state: this.state,
       progress: this.progress,
       startDate: this.startDate,
       endDate: this.endDate,
@@ -49,22 +77,22 @@ const genId = () => {
   return id;
 };
 
-
-async function newReport({ ttl, onCancel }) {
+async function newReporter() {
   // Fail if we hit limit
-  if (tokens.size > MAX_SIZE) throw new Error('Not enough size for report db');
+  if (tokens.size > MAX_SIZE) throw new Error('Not enough size for reporter db');
   const id = genId();
-  tokens.set(id, new NewReport(id, { ttl, onCancel }));
-  return id;
+  const reporter = new Reporter(id);
+  tokens.set(id, reporter);
+  return reporter;
 }
 
-async function getReport(id) {
+async function getReporter(id) {
   return tokens.get(id);
 }
 
 module.exports = {
-  newReport,
-  getReport,
+  newReporter,
+  getReporter,
 };
 
 
@@ -73,9 +101,7 @@ clean();
 
 function clean() {
   for (const [id, report] of tokens.entries()) {
-    if (!report.isDead()) continue;
-    if (typeof report.onCancel === 'function') report.onCancel();
-    tokens.delete(id);
+    if (report.isDeletable()) tokens.delete(id);
   }
 
   setTimeout(clean, CLEAN_EVERY);
