@@ -3,7 +3,7 @@ const { deploy } = require('./utils/deploy');
 const { verifyCommit } = require('./utils/github-verify');
 
 async function action(req, { sha }) {
-  if (!sha) return { status: 400, result: 'Missing sha field' };
+  if (typeof sha !== 'string') return { status: 400, result: `sha field must be a string, received ${typeof sha}` };
 
   try {
     await verifyCommit(sha, { branch: 'master' });
