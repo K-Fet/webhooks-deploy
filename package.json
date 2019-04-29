@@ -7,6 +7,9 @@
   "author": "Marc-Antoine Fernandes <marcantoinefernandes@gmail.com>",
   "license": "Apache-2.0",
   "private": true,
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "@octokit/rest": "^16.25.0",
     "argon2": "^0.21.0",

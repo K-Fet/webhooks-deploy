@@ -1,6 +1,8 @@
 const { getReporter } = require('./utils/follow-db');
 
 async function action(req, { id }) {
+  if (!id) return { status: 400, result: 'Missing id field' };
+
   const reporter = await getReporter(id);
   if (reporter) {
     if (!reporter.canCancel()) return { status: 400, result: `Task can't be cancelled. (status: ${reporter.status})` };

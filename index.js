@@ -7,7 +7,7 @@ const { json } = require('body-parser');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const TOKEN_HASH = process.env.TOKEN_HASH || 'dev-token';
+const TOKEN_HASH = process.env.TOKEN_HASH;
 
 const ACTIONS = {
   'deploy-staging': require('./actions/deploy-staging'),
