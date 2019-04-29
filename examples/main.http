@@ -1,0 +1,10 @@
+POST http://localhost:3000/
+Content-Type: application/json
+
+{
+  "action": "cancel-action",
+  "token": "93d27048f6f8f7678313054c0df3f4c5dcd6ee5127f6d3ffd669d3be91234f0c20d1e406edef73d5",
+  "id": "a"
+}
+
+###

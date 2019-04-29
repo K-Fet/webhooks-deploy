@@ -1,0 +1,24 @@
+[Unit]
+Description=A lightweight server used to deploy a new version of the K-App
+Documentation=https://github.com/K-Fet/webhooks-deploy
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/webhooks-deploy
+ExecStart=/usr/bin/node index.js
+Restart=on-failure
+RestartSec=10
+
+# Logging
+StandardOutput=syslog
+StandardError=syslog
+
+# Security
+DynamicUser=yes
+NoNewPrivileges=yes
+ProtectControlGroups=yes
+ProtectKernelModules=yes
+
+[Install]
+WantedBy=multi-user.target
