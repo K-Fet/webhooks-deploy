@@ -55,6 +55,6 @@ app.post('/',
   am(handler),
 );
 
-app.listen(PORT, () => {
+app.listen(PORT, 'localhost', () => {
   console.log(`Listening on ${PORT}`);
 });
