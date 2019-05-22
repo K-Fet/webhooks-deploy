@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 const TOKEN_HASH = process.env.TOKEN_HASH;
 
 const ACTIONS = {
+  'backup-data': require('./actions/backup-data'),
   'deploy-staging': require('./actions/deploy-staging'),
   'deploy-prod': require('./actions/deploy-prod'),
   'follow-action': require('./actions/follow-action'),

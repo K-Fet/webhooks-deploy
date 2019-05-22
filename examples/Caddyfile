@@ -1,0 +1,92 @@
+###########################################
+##
+## K-Fêt Caddyfile
+##
+##  - K-App (kfet-insa.fr)
+##  - K-App Staging API (master.api.kfet-insa.fr)
+##  - Webhooks (webhooks.kfet-insa.fr)
+##
+###########################################
+
+##
+# Snippets
+##
+
+(cloudflare) {
+  tls {
+		dns cloudflare
+	}
+}
+
+(kapp) {
+	# Compress responses
+    gzip
+
+	# Remove Server header
+    header / -Server
+}
+
+##
+#  K-App (legacy)
+##
+staging.kfet-insa.fr,
+kfet-insa.fr {
+    import cloudflare
+  	import kapp
+
+    # Serve client app
+    root /srv/kapp/client/dist/
+
+    # Proxy request for API
+    proxy /api localhost:3000-3003 {
+        policy ip_hash          # Use ip hash for the backend (to have nice rate limiting)
+        fail_timeout 5m         # Time before considering a backend down
+        try_duration 4s         # How long proxy will try to find a backend
+        transparent             # Set headers as the proxy except
+    }
+
+    # Add cache for one day (except for API calls)
+    header / Cache-Control "public, max-age=86400"
+    header /api -Cache-Control
+
+    rewrite {
+     if {path} not_starts_with /api
+        to {path} /
+    }
+}
+
+##
+#  K-App Production API
+##
+api.kfet-insa.fr {
+    import cloudflare
+    import kapp
+
+    # Proxy request
+    proxy / localhost:3000 {
+        transparent # Set headers as the proxy except
+    }
+}
+
+##
+#  K-App Staging API
+##
+master.api.kfet-insa.fr {
+    import cloudflare
+
+    # Proxy request
+    proxy / localhost:3050 {
+        transparent # Set headers as the proxy except
+    }
+}
+
+##
+#  Webhooks
+##
+webhooks.kfet-insa.fr {
+    import cloudflare
+    log stdout
+    proxy / localhost:8100 {
+        transparent # Set headers as the proxy except
+    }
+}

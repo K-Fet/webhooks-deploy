@@ -30,10 +30,10 @@ async function verifyCommit(sha, { branch }) {
     throw 'Error while getting branches for head commit';
   }
 
-  const branch = branches.data.find(value => value.name === branch);
+  const gBranch = branches.data.find(value => value.name === branch);
 
-  if (!branch) throw `Commit is not HEAD on ${branch}`;
-  if (!branch.protected) throw`Branch ${branch} is not protected`;
+  if (!gBranch) throw `Commit is not HEAD on ${gBranch}`;
+  if (!gBranch.protected) throw`Branch ${gBranch} is not protected`;
 }
 
 module.exports = {
