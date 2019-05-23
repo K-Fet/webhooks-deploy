@@ -6,7 +6,7 @@ const { json } = require('body-parser');
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const TOKEN_HASH = process.env.TOKEN_HASH;
 
 const ACTIONS = {

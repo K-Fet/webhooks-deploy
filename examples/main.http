@@ -1,10 +1,19 @@
-POST http://localhost:3000/
+POST http://localhost:3001/
 Content-Type: application/json
 
 {
-  "action": "cancel-action",
-  "token": "93d27048f6f8f7678313054c0df3f4c5dcd6ee5127f6d3ffd669d3be91234f0c20d1e406edef73d5",
-  "id": "a"
+  "action": "backup-data",
+  "token": "24d9b3912dcf4a09393b8f08653d513be8e5cee1cad556138b8b1f341e23ed435cf29414956a5170"
+}
+
+###
+POST http://localhost:3001/
+Content-Type: application/json
+
+{
+  "action": "follow-action",
+  "token": "24d9b3912dcf4a09393b8f08653d513be8e5cee1cad556138b8b1f341e23ed435cf29414956a5170",
+  "id": "fefba006-411c-4729-b209-fb48c84b960f"
 }
 
 ###

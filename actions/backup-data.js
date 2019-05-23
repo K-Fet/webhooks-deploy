@@ -8,46 +8,71 @@ const { newReporter } = require('./utils/follow-db');
 const deployQueue = new SequentialTaskQueue({});
 
 const BACKUP_TIMEOUT = 1000 * 60; // 1 min
-const BACKUP_FOLDER = '/srv/kapp-backups/';
-const TMP_FOLDER = path.resolve(BACKUP_FOLDER, '.tmp');
+const BACKUP_FOLDER = process.env.BACKUP_FOLDER || './kapp-backups/';
+const TMP_FOLDER = path.join(BACKUP_FOLDER, '.tmp');
 
 const doMySQLBackup = ({ host, database, username, password }) => new Promise((resolve, reject) => {
-  const wstr = fs.createWriteStream(path.join(TMP_FOLDER, `${database}.sql`));
+  const wstr = fs.createWriteStream(path.resolve(TMP_FOLDER, `${database}.sql`));
 
   const mysqldump = spawn('mysqldump', [
     '-h',
     host,
     '-u',
     username,
-    '-p',
-    password,
+    `-p${password}`,
     database,
   ]);
 
-  mysqldump.stdout.pipe(wstr).on('finish', resolve).on('error', reject);
+  let handled = false;
+  const rejectASAP = () => {
+    if (handled) return;
+    handled = true;
+    return reject(code);
+  };
+
+  mysqldump.stdout
+    .pipe(wstr)
+    .on('finish', () => mysqldump.on('exit', code => code ? rejectASAP() : resolve()))
+    .on('error', rejectASAP);
+
+  mysqldump.on('error', rejectASAP);
 });
 
 const doMongoBackup = ({ uri }) => new Promise((resolve, reject) => {
-  const wstr = fs.createWriteStream(path.join(TMP_FOLDER, `mongodump.bin`));
+  const wstr = fs.createWriteStream(path.resolve(TMP_FOLDER, `mongodump.bin`));
 
   const mongodump = spawn('mongodump', [
+    '--archive',
     '--uri',
     uri,
   ]);
 
-  mongodump.stdout.pipe(wstr).on('finish', resolve).on('error', reject);
+  let handled = false;
+  const rejectASAP = () => {
+    if (handled) return;
+    handled = true;
+    return reject(code);
+  };
+
+  mongodump.stdout
+    .pipe(wstr)
+    .on('finish', () => mongodump.on('exit', code => code ? rejectASAP() : resolve()))
+    .on('error', rejectASAP);
+
+  mongodump.on('error', rejectASAP);
 });
 
 const doGzipFolder = ({ database }) => new Promise((resolve, reject) => {
-  const filename = `${(new Date().toISOString())}.${database}.tar.gz`;
+  const dateNow = new Date().toISOString().replace(/:/g, '-');
+  const filename = `${dateNow}.${database}.tar.gz`;
 
   const tar = spawn('tar', [
     '-zcvf',
-    path.resolve(BACKUP_FOLDER, filename),
-    TMP_FOLDER,
-  ]);
+    filename,
+    `${path.basename(TMP_FOLDER)}/*`,
+  ], { cwd: path.resolve(BACKUP_FOLDER) });
 
-  tar.stdout.on('finish', resolve).on('error', reject);
+  tar.on('close', code => code ? reject() : resolve()).on('error', reject);
 });
 
 async function deleteOldBackups(backupDir, maxOld) {
@@ -77,6 +102,8 @@ async function doBackup({ reporter }) {
   const {
     DB__HOST, DB__USERNAME, DB__PASSWORD, DB__DATABASE, KEEP_BACKUPS_FOR, MONGODB__URL,
   } = process.env;
+
+  reporter.start();
 
   try {
     // Prepare temp folder
@@ -115,8 +142,8 @@ async function action(req, {}) {
     'DB__USERNAME',
     'DB__PASSWORD',
     'DB__DATABASE',
-    'BACKUP_DIR',
     'KEEP_BACKUPS_FOR',
+    'MONGODB__URL',
   );
 
   const reporter = await newReporter();

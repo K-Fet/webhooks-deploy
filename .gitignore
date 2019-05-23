@@ -63,3 +63,5 @@ typings/
 
 logs/**/*
 !logs/.keep
+
+/kapp-backups

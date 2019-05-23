@@ -8,7 +8,7 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "dependencies": {
     "@octokit/rest": "^16.25.0",
@@ -20,5 +20,15 @@
     "morgan": "^1.9.1",
     "sequential-task-queue": "^1.2.1",
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "kapp-backups/*",
+      "logs/*"
+    ],
+    "delay": "2500"
   }
 }
