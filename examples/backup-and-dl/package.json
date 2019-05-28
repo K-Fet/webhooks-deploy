@@ -1,0 +1,11 @@
+{
+  "name": "backup-and-dl",
+  "version": "0.0.0",
+  "description": "Backup and DL a backup made by webhooks deploy",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  }
+}
