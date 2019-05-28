@@ -13,10 +13,15 @@ class Reporter {
     this.endDate = null;
     this.progress = 0;
     this.state = 'ENQUEUED';
+    this.metada = {};
   }
 
   setTask(task) {
     this.task = task;
+  }
+
+  setMetadata(key, value) {
+    this.metada[key] = value;
   }
 
   start() {
@@ -74,6 +79,7 @@ class Reporter {
       progress: this.progress,
       startDate: this.startDate,
       endDate: this.endDate,
+      metadata: this.metada,
     };
   }
 }

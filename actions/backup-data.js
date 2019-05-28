@@ -72,7 +72,8 @@ const doGzipFolder = ({ database }) => new Promise((resolve, reject) => {
     `${path.basename(TMP_FOLDER)}/*`,
   ], { cwd: path.resolve(BACKUP_FOLDER) });
 
-  tar.on('close', code => code ? reject() : resolve()).on('error', reject);
+  tar.on('close', code => code ? reject() : resolve(filename))
+    .on('error', reject);
 });
 
 async function deleteOldBackups(backupDir, maxOld) {
@@ -120,7 +121,8 @@ async function doBackup({ reporter }) {
     reporter.updateProgress(60);
 
     // Zip content and save it
-    await doGzipFolder({ database: DB__DATABASE });
+    const res = await doGzipFolder({ database: DB__DATABASE });
+    reporter.setMetadata('link', `/?action=dl-backup&file=${res}`);
     reporter.updateProgress(90);
 
     // Delete old backups
