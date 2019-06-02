@@ -45,6 +45,7 @@ kfet-insa.fr {
         fail_timeout 5m         # Time before considering a backend down
         try_duration 4s         # How long proxy will try to find a backend
         transparent             # Set headers as the proxy except
+        without /api            # Legacy handler
     }
 
     # Add cache for one day (except for API calls)
