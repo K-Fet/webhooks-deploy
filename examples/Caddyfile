@@ -22,6 +22,8 @@
 	# Compress responses
     gzip
 
+    log stdout
+
 	# Remove Server header
     header / -Server
 }
@@ -62,6 +64,11 @@ api.kfet-insa.fr {
     import cloudflare
     import kapp
 
+    cors / {
+        origin https://app.kfet-insa.fr
+        allowed_headers Content-Type
+    }
+
     # Proxy request
     proxy / localhost:3000 {
         transparent # Set headers as the proxy except
@@ -73,6 +80,12 @@ api.kfet-insa.fr {
 ##
 master.api.kfet-insa.fr {
     import cloudflare
+    import kapp
+
+    cors / {
+        origin https://master.app.kfet-insa.fr
+        allowed_headers Content-Type
+    }
 
     # Proxy request
     proxy / localhost:3050 {
