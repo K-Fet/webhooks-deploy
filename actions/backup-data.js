@@ -137,6 +137,25 @@ async function doBackup({ reporter }) {
   }
 }
 
+async function simpleBackup() {
+  const {
+    DB__HOST, DB__USERNAME, DB__PASSWORD, DB__DATABASE, MONGODB__URL,
+  } = process.env;
+
+  // Prepare temp folder
+  await fs.ensureDir(TMP_FOLDER);
+  await fs.emptyDir(TMP_FOLDER);
+
+  // Backup MySQL
+  await doMySQLBackup({ host: DB__HOST, username: DB__USERNAME, password: DB__PASSWORD, database: DB__DATABASE });
+
+  // Backup MongoDB
+  await doMongoBackup({ uri: MONGODB__URL });
+
+  // Zip content and save it
+  await doGzipFolder({ database: DB__DATABASE });
+}
+
 
 async function action(req, {}) {
   checkEnv(
@@ -156,3 +175,4 @@ async function action(req, {}) {
 }
 
 module.exports = action;
+module.exports.simpleBackup = simpleBackup;

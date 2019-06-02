@@ -2,6 +2,7 @@ const { SequentialTaskQueue } = require('sequential-task-queue');
 const cp = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { simpleBackup } = require('../backup-data');
 
 const DEPLOY_FOLDER = '/srv/';
 const DEPLOY_TIMEOUT = 1000 * 60 * 60; // 1 hr
@@ -84,7 +85,7 @@ const saga = [
     name: 'K-App backup',
     progress: 65,
     task: async ({ cwd, reporter }) => {
-      await spawn('yarn cli backup', { name: `yarn-cli-backup-${reporter.id}`, cwd });
+      await simpleBackup();
     },
     undoTask: null,
   },
@@ -102,7 +103,7 @@ const saga = [
     name: 'K-App restart',
     progress: 100,
     task: async ({ cwd, reporter }) => {
-      await spawn('systemctl restart <app_name>@*', { name: `systemctl-restart-${reporter.id}`, cwd });
+      await spawn(`systemctl restart ${path.basename(cwd)}@*`, { name: `systemctl-restart-${reporter.id}`, cwd });
     },
     undoTask: null,
   },
