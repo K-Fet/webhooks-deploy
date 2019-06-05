@@ -85,6 +85,7 @@ master.api.kfet-insa.fr {
 
     cors / {
         origin https://master.app.kfet-insa.fr
+        origin_regexp .+zen-swirles-809b7e\.netlify\.com$
         allowed_headers Content-Type
     }
 
