@@ -9,6 +9,8 @@ const DEPLOY_TIMEOUT = 1000 * 60 * 60; // 1 hr
 const LOGS_FOLDER = path.resolve(__dirname, '..', '..', 'logs');
 const deployQueue = new SequentialTaskQueue({});
 
+deployQueue.on('error', err => console.warn('Error in deploy queue: ', err));
+deployQueue.on('timeout', err => console.warn('Task timed out in deploy queue: ', err));
 
 const spawn = (command, args, opts) => {
   if (!Array.isArray(args)) {
