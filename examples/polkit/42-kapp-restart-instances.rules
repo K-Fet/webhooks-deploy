@@ -14,7 +14,7 @@ polkit.addRule(function(action, subject) {
   // Pattern to match any services related to the kapp like kapp-staging or any other variant.
   var pattern = RegExp("kapp(-(" + SERVICES.join("|") + "))?@(\\d){2,4}\\.service");
 
-  if (subject.user === "webhooks-[secret]" && pattern.test(action.lookup("unit"))) {
+  if (subject.user === "www-data" && pattern.test(action.lookup("unit"))) {
     var verb = action.lookup("verb");
     if (verb == "start" || verb == "stop" || verb == "restart") {
       return polkit.Result.YES;

@@ -32,7 +32,7 @@ const spawn = (command, args, opts) => {
     let stdout = '';
 
     pr.stdout.on('data', (data) => {
-      fs.write(out, data.toString(), err => console.warn(`[logging] Error writing to file ${name}.out.log`, err));
+      fs.write(out, data.toString(), err => err ? console.warn(`[logging] Error writing to file ${name}.out.log`, err) : undefined);
       stdout += data.toString();
     });
 
