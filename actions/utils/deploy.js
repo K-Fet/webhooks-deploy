@@ -15,7 +15,7 @@ deployQueue.on('timeout', err => console.warn('Task timed out in deploy queue: '
 const spawn = (command, args, opts) => {
   if (!Array.isArray(args)) {
     opts = args;
-    args = undefined;
+    args = [];
   }
 
   const { name, cwd } = opts;
@@ -49,14 +49,14 @@ const saga = [
     name: 'Fetch new refs',
     progress: 10,
     task: async ({ cwd, reporter }) => {
-      await spawn('git fetch', { name: `git-fetch-${reporter.id}`, cwd });
+      await spawn('git', ['fetch'], { name: `git-fetch-${reporter.id}`, cwd });
     },
     undoTask: null,
   },
   {
     name: 'Saving currentHead',
     task: async ({ cwd, reporter }) => {
-      const currentHead = await spawn('git rev-parse HEAD', {
+      const currentHead = await spawn('git', ['rev-parse', 'HEAD'], {
         name: `git-rev-parse-head-${reporter.id}`, cwd,
       });
       return { currentHead };
@@ -80,7 +80,9 @@ const saga = [
     name: 'Yarn install',
     progress: 50,
     task: async ({ cwd, reporter }) => {
-      await spawn('yarn install --non-interactive --frozen-lockfile', { name: `yarn-install-${reporter.id}`, cwd });
+      await spawn('yarn', ['install', '--non-interactive', '--frozen-lockfile'], {
+        name: `yarn-install-${reporter.id}`, cwd,
+      });
     },
     undoTask: null,
   },
@@ -96,17 +98,19 @@ const saga = [
     name: 'K-App migrate',
     progress: 80,
     task: async ({ cwd, reporter }) => {
-      await spawn('yarn cli migrate', { name: `yarn-cli-migrate-${reporter.id}`, cwd });
+      await spawn('yarn', ['cli', 'migrate'], { name: `yarn-cli-migrate-${reporter.id}`, cwd });
     },
     undoTask: async ({ cwd, reporter }) => {
-      await spawn('yarn cli migrate down', { name: `yarn-cli-migrate-down-${reporter.id}`, cwd });
+      await spawn('yarn', ['cli', 'migrate', 'down'], { name: `yarn-cli-migrate-down-${reporter.id}`, cwd });
     },
   },
   {
     name: 'K-App restart',
     progress: 100,
     task: async ({ cwd, reporter }) => {
-      await spawn(`systemctl restart ${path.basename(cwd)}@*`, { name: `systemctl-restart-${reporter.id}`, cwd });
+      await spawn('systemctl', ['restart', `${path.basename(cwd)}@*`], {
+        name: `systemctl-restart-${reporter.id}`, cwd,
+      });
     },
     undoTask: null,
   },
