@@ -132,6 +132,7 @@ async function taskHandler({ cwd, sha, reporter }, token) {
       if (undoTask) undoStack.push({ name, undoTask });
       if (newParams) Object.assign(params, newParams);
     } catch (e) {
+      console.warn(`[deploy] Error while executing task '${name}'`, e);
       reporter.cancelling();
       break;
     }
@@ -144,6 +145,7 @@ async function taskHandler({ cwd, sha, reporter }, token) {
     try {
       await undoTask({ cwd, sha, reporter, ...params });
     } catch (e) {
+      console.warn(`[deploy] Error while undoing task '${name}'`, e);
       cancelFailed = true;
       reporter.failedCancelling();
       break;
