@@ -32,6 +32,7 @@ const spawn = (command, args, opts) => {
     let stdout = '';
 
     pr.stdout.on('data', (data) => stdout += data.toString());
+    pr.stderr.on('data', (data) => process.stderr.write(data.toString()));
 
     pr.on('close', code => {
       fs.closeSync(out);
@@ -123,7 +124,7 @@ async function taskHandler({ cwd, sha, reporter }, token) {
       reporter.cancelling();
       break;
     }
-    console.log(`[deploy] Executing task '${name}`);
+    console.log(`[deploy] Executing task '${name}'`);
     try {
       const newParams = await task({ cwd, sha, reporter, ...params });
 
