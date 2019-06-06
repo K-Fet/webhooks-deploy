@@ -10,6 +10,8 @@ ExecStart=/usr/bin/node index.js
 Restart=on-failure
 RestartSec=10
 
+User=webhooks-[secret]
+
 # Logging
 StandardOutput=syslog
 StandardError=syslog

@@ -2,7 +2,7 @@
 ##
 ## K-Fêt Caddyfile
 ##
-##  - K-App (kfet-insa.fr)
+##  - K-App API (api.kfet-insa.fr)
 ##  - K-App Staging API (master.api.kfet-insa.fr)
 ##  - Webhooks (webhooks.kfet-insa.fr)
 ##
@@ -26,36 +26,6 @@
 
 	# Remove Server header
     header / -Server
-}
-
-##
-#  K-App (legacy)
-##
-staging.kfet-insa.fr,
-kfet-insa.fr {
-    import cloudflare
-  	import kapp
-
-    # Serve client app
-    root /srv/kapp/client/dist/
-
-    # Proxy request for API
-    proxy /api localhost:3000-3003 {
-        policy ip_hash          # Use ip hash for the backend (to have nice rate limiting)
-        fail_timeout 5m         # Time before considering a backend down
-        try_duration 4s         # How long proxy will try to find a backend
-        transparent             # Set headers as the proxy except
-        without /api            # Legacy handler
-    }
-
-    # Add cache for one day (except for API calls)
-    header / Cache-Control "public, max-age=86400"
-    header /api -Cache-Control
-
-    rewrite {
-     if {path} not_starts_with /api
-        to {path} /
-    }
 }
 
 ##
