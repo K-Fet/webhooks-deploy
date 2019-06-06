@@ -15,7 +15,7 @@ deployQueue.on('timeout', err => console.warn('Task timed out in deploy queue: '
 const spawn = (command, args, opts) => {
   if (!Array.isArray(args)) {
     opts = args;
-    args = [];
+    args = undefined;
   }
 
   const { name, cwd } = opts;
