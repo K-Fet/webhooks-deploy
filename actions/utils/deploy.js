@@ -123,6 +123,7 @@ async function taskHandler({ cwd, sha, reporter }, token) {
   reporter.start();
   const undoStack = [];
   const params = {};
+  let hasFailed = false;
 
   for (const { name, task, undoTask, progress } of saga) {
     if (token.cancelled) {
@@ -135,14 +136,17 @@ async function taskHandler({ cwd, sha, reporter }, token) {
       const newParams = await task({ cwd, sha, reporter, ...params });
 
       if (progress) reporter.updateProgress(progress);
-      if (undoTask) undoStack.push({ name, undoTask });
+      if (undoTask) undoStack.unshift({ name, undoTask });
       if (newParams) Object.assign(params, newParams);
     } catch (e) {
       console.warn(`[deploy] Error while executing task '${name}'`, e);
       reporter.cancelling();
+      hasFailed = true;
       break;
     }
   }
+
+  if (!hasFailed) return;
 
   let cancelFailed = false;
 
