@@ -16,6 +16,7 @@ User=webhooks-[secret]
 StandardOutput=syslog
 StandardError=syslog
 
+ReadWritePaths=/srv/webhooks-deploy/logs
 ReadWritePaths=/srv/kapp
 ReadWritePaths=/srv/kapp-staging
 ReadWritePaths=/srv/kapp-backups
