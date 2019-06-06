@@ -31,8 +31,7 @@ const spawn = (command, args, opts) => {
 
     let stdout = '';
 
-    pr.stdout.on('data', (data) => stdout += data.toString());
-    pr.stderr.on('data', (data) => process.stderr.write(data.toString()));
+   out.on('data', (data) => stdout += data.toString());
 
     pr.on('close', code => {
       fs.closeSync(out);
