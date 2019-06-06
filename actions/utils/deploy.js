@@ -1,7 +1,7 @@
 const { SequentialTaskQueue } = require('sequential-task-queue');
 const cp = require('child_process');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 const { simpleBackup } = require('../backup-data');
 
 const DEPLOY_FOLDER = '/srv/';
@@ -26,12 +26,15 @@ const spawn = (command, args, opts) => {
 
     const pr = cp.spawn(command, args, {
       cwd,
-      stdio: [process.stdin, out, err],
+      stdio: [process.stdin, 'pipe', err],
     });
 
     let stdout = '';
 
-   out.on('data', (data) => stdout += data.toString());
+    pr.stdout.on('data', (data) => {
+      fs.write(out, data.toString(), err => console.warn(`[logging] Error writing to file ${name}.out.log`, err));
+      stdout += data.toString();
+    });
 
     pr.on('close', code => {
       fs.closeSync(out);
