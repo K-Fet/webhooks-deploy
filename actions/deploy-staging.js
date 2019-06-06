@@ -12,7 +12,7 @@ async function action(req, { sha }) {
   }
 
   const reporter = await newReporter();
-  deploy({ reporter, path: 'kapp-staging', sha });
+  deploy({ reporter, folder: 'kapp-staging', sha });
   return { status: 200, result: reporter.json() };
 
 }

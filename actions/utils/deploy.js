@@ -152,8 +152,8 @@ async function taskHandler({ cwd, sha, reporter }, token) {
   }
 }
 
-function deploy({ path, sha, reporter }) {
-  const cwd = path.resolve(DEPLOY_FOLDER, path);
+function deploy({ folder, sha, reporter }) {
+  const cwd = path.resolve(DEPLOY_FOLDER, folder);
 
   const task = deployQueue.push(taskHandler, { args: { cwd, sha, reporter }, timeout: DEPLOY_TIMEOUT });
   reporter.setTask(task);
