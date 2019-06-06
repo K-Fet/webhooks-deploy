@@ -66,10 +66,12 @@ const doGzipFolder = ({ database }) => new Promise((resolve, reject) => {
   const dateNow = new Date().toISOString().replace(/:/g, '-');
   const filename = `${dateNow}.${database}.tar.gz`;
 
+  const files = fs.readdirSync(TMP_FOLDER);
+
   const tar = spawn('tar', [
     '-zcvf',
     filename,
-    `${path.basename(TMP_FOLDER)}/*`,
+    ...files.map(f => path.resolve(TMP_FOLDER, f)),
   ], { cwd: path.resolve(BACKUP_FOLDER) });
 
   tar.on('close', code => code ? reject() : resolve(filename))
