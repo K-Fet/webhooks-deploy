@@ -1,34 +1,12 @@
 {
-  "name": "webhooks-deploy",
-  "version": "0.0.1",
-  "description": "A lightweight server used to deploy a new version of the K-App",
-  "main": "index.js",
+  "name": "webhooks-monorepo",
+  "private": true,
+  "version": "0.0.0",
   "repository": "https://github.com/K-Fet/webhooks-deploy.git",
   "author": "Marc-Antoine Fernandes <marcantoinefernandes@gmail.com>",
   "license": "Apache-2.0",
-  "private": true,
-  "scripts": {
-    "start": "nodemon index.js"
-  },
-  "dependencies": {
-    "@octokit/rest": "^16.25.0",
-    "argon2": "^0.21.0",
-    "body-parser": "^1.18.3",
-    "dotenv": "^7.0.0",
-    "express": "^4.16.4",
-    "fs-extra": "^8.0.1",
-    "morgan": "^1.9.1",
-    "sequential-task-queue": "^1.2.1",
-    "uuid": "^3.3.2"
-  },
-  "devDependencies": {
-    "nodemon": "^1.19.0"
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "kapp-backups/*",
-      "logs/*"
-    ],
-    "delay": "2500"
-  }
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {}
 }

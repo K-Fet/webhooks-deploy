@@ -12,10 +12,6 @@ RestartSec=10
 
 User=webhooks-[secret]
 
-# Logging
-StandardOutput=syslog
-StandardError=syslog
-
 ReadWritePaths=/srv/webhooks-deploy/logs
 ReadWritePaths=/srv/kapp
 ReadWritePaths=/srv/kapp-staging
