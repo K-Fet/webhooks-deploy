@@ -100,9 +100,11 @@ const saga = [
     name: 'K-App migrate',
     progress: 80,
     task: async ({ cwd, reporter }) => {
+      cwd = path.join(cwd, 'packages/server');
       await spawn('yarn', ['cli', 'migrate'], { name: `yarn-cli-migrate-${reporter.id}`, cwd });
     },
     undoTask: async ({ cwd, reporter }) => {
+      cwd = path.join(cwd, 'packages/server');
       await spawn('yarn', ['cli', 'migrate', 'down'], { name: `yarn-cli-migrate-down-${reporter.id}`, cwd });
     },
   },
